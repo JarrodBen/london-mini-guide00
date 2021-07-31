@@ -12,20 +12,57 @@
 .city-selector {
   display: 'inline';
   margin-left: 2rem;
+  padding: 0.5rem;
+  border-radius: 5px;
+  background-color: rgb(197, 194, 194);
+}
+
+.error-div {
+  background-color: pink;
+  color: maroon;
+  font-size: 1.3rem;
+  border-radius: 0.3rem;
+}
+
+.error-text {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
 }
 
 .active-tab {
   background-color: blue;
   color: white;
+  padding: 0.7rem;
+  border-radius: 0.3rem;
 }
 
 .inactive-tab {
   background-color: rgb(197, 194, 194);
   color: black;
+  padding: 0.4rem;
+  border-radius: 0.3rem;
 }
 
 .category-div {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+}
+
+.loader-div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.odd-row {
+  background-color: darkgray;
+}
+
+.cell-padding {
+  padding-bottom: 0.7rem;
+  padding-top: 0.7rem;
 }

@@ -1,63 +1,69 @@
 import './App.css';
 import React, { useState } from 'react';
+import Loader from 'react-loader-spinner';
 import StratfordData from './data/Stratford.json';
 import HeathrowData from './data/Heathrow.json';
 import HarrowData from './data/Harrow.json';
 
 function App() {
-  const [data, setData] = useState([]);
-  const [city, setCity] = useState('Stratford');
+  const [city, setCity] = useState('');
   const [activeTab, setActiveTab] = useState({
-    pharmacies: false,
+    pharmacies: true,
     colleges: false,
     hospitals: false,
     doctors: false,
   });
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const changeCategory = (e) => {
     e.preventDefault();
-    let clickedTab = e.target.value;
+    if (!city) {
+      setError(true);
+    } else {
+      let clickedTab = e.target.value;
 
-    switch (clickedTab) {
-      case 'pharmacies':
-        setActiveTab({
-          pharmacies: true,
-          colleges: false,
-          hospitals: false,
-          doctors: false,
-        });
+      switch (clickedTab) {
+        case 'pharmacies':
+          setActiveTab({
+            pharmacies: true,
+            colleges: false,
+            hospitals: false,
+            doctors: false,
+          });
 
-        break;
+          break;
 
-      case 'colleges':
-        setActiveTab({
-          pharmacies: false,
-          colleges: true,
-          hospitals: false,
-          doctors: false,
-        });
-        break;
+        case 'colleges':
+          setActiveTab({
+            pharmacies: false,
+            colleges: true,
+            hospitals: false,
+            doctors: false,
+          });
+          break;
 
-      case 'hospitals':
-        setActiveTab({
-          pharmacies: false,
-          colleges: false,
-          hospitals: true,
-          doctors: false,
-        });
-        break;
+        case 'hospitals':
+          setActiveTab({
+            pharmacies: false,
+            colleges: false,
+            hospitals: true,
+            doctors: false,
+          });
+          break;
 
-      case 'doctors':
-        setActiveTab({
-          pharmacies: false,
-          colleges: false,
-          hospitals: false,
-          doctors: true,
-        });
-        break;
+        case 'doctors':
+          setActiveTab({
+            pharmacies: false,
+            colleges: false,
+            hospitals: false,
+            doctors: true,
+          });
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   };
 
@@ -71,9 +77,13 @@ function App() {
         <span>Choose a city:</span>
         <select
           className='city-selector'
-          onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => {
+            setCity(e.target.value);
+            setError(false);
+            setLoading(true);
+          }}
         >
-          <option id='default-city' value='Default' defaultValue=''>
+          <option id='default-city' value='' defaultValue=''>
             Select a city
           </option>
           <option value='Harrow'>Harrow</option>
@@ -81,6 +91,17 @@ function App() {
           <option value='Heathrow'>Heathrow</option>
         </select>
       </div>
+      {error && (
+        <>
+          <hr className='mt-2 mb-2' />
+          <div className='error-div'>
+            <h5 className='error-text'>
+              Check out your request, a city and category must be chosen. No
+              default values are provided.
+            </h5>
+          </div>
+        </>
+      )}
       <hr />
       <div className='category-div'>
         <button
@@ -121,7 +142,11 @@ function App() {
         </button>
       </div>
       <hr />
-      <Table activeTab={activeTab} city={city} />
+      {loading && city ? (
+        <LoadingSpinner />
+      ) : (
+        <Table activeTab={activeTab} city={city} />
+      )}
     </div>
   );
 }
@@ -176,20 +201,20 @@ const Table = ({ activeTab, city }) => {
       <table className='table'>
         <thead>
           <tr>
-            <th scope='col' style={{ width: '10%' }}>
+            <th scope='col' style={{ width: '7%' }}>
               #
             </th>
             <th scope='col' style={{ width: '25%' }}>
               Name
             </th>
-            <th scope='col' style={{ width: '20%' }}>
+            <th scope='col' style={{ width: '15%' }}>
               Phone
             </th>
-            <th scope='col' style={{ width: '20%' }}>
+            <th scope='col' style={{ width: '28%' }}>
               Address
             </th>
             <th scope='col' style={{ width: '25%' }}>
-              website
+              Website
             </th>
           </tr>
         </thead>
@@ -197,14 +222,22 @@ const Table = ({ activeTab, city }) => {
           {data && data.length > 0 ? (
             data.map((place, i) => {
               return (
-                <tr key={i}>
-                  <th scope='row'>{i + 1}</th>
-                  <td>{place.name ? place.name : 'N/A'}</td>
-                  <td>{place.phone ? place.phone : 'N/A'}</td>
-                  <td>{place.address ? place.address : 'N/A'}</td>
-                  <td>
+                <tr key={i} className={i % 2 === 0 ? 'odd-row' : 'even-row'}>
+                  <th scope='row' className='cell-padding'>
+                    {i + 1}
+                  </th>
+                  <td className='cell-padding'>
+                    {place.name ? place.name : 'N/A'}
+                  </td>
+                  <td className='cell-padding'>
+                    {place.phone ? place.phone : 'N/A'}
+                  </td>
+                  <td className='cell-padding'>
+                    {place.address ? place.address : 'N/A'}
+                  </td>
+                  <td className='cell-padding'>
                     {place.website ? (
-                      <a href={place.website} target='_blank'>
+                      <a href={place.website} target='_blank' rel='noreferrer'>
                         {place.name}
                       </a>
                     ) : (
@@ -225,6 +258,15 @@ const Table = ({ activeTab, city }) => {
           )}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+const LoadingSpinner = () => {
+  return (
+    <div className='loader-div'>
+      <Loader type='Oval' color='#1e58b0' height='100' width='100' />
+      {/*Other cool spinner types are-: 1. Bars, 2. Three dots, 3. TailSpin*/}
     </div>
   );
 };
